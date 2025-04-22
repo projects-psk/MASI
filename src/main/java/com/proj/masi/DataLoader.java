@@ -60,7 +60,6 @@ public class DataLoader implements CommandLineRunner {
             log.info("Uniterm Swap już istnieje, pomijam wstawianie");
         }
 
-        // Teraz mamy otwartą sesję i transakcję – kolekcje są init‑owane lazily bez wyjątku
         log.info("Lista wszystkich unitermów w bazie:");
         repo.findAll().forEach(u ->
                 log.info("  {}: seq={} / exp={}",

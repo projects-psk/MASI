@@ -54,7 +54,6 @@ public class UnitermDefMapper {
                 .toList();
         entity.getSequence().addAll(seq);
 
-        // expansion
         entity.getExpansion().clear();
         List<UnitermExpansion> exp = dto.expansion().stream()
                 .map(text -> {
