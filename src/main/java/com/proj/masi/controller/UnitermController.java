@@ -2,7 +2,6 @@ package com.proj.masi.controller;
 
 import com.proj.masi.dto.UnitermDefDto;
 import com.proj.masi.service.UnitermService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,19 +28,20 @@ public class UnitermController {
     }
 
     @PostMapping
-    public ResponseEntity<UnitermDefDto> create(@Valid @RequestBody UnitermDefDto dto) {
+    public ResponseEntity<UnitermDefDto> create(@RequestBody UnitermDefDto dto) {
         UnitermDefDto created = service.create(dto);
+        URI location = URI.create("/api/uniterms/" + created.id());
         return ResponseEntity
-                .created(URI.create("/api/uniterms/" + created.id()))
+                .created(location)
                 .body(created);
     }
 
     @PutMapping("/{id}")
-    public UnitermDefDto update(
+    public ResponseEntity<UnitermDefDto> update(
             @PathVariable UUID id,
-            @Valid @RequestBody UnitermDefDto dto
+            @RequestBody UnitermDefDto dto
     ) {
-        return service.update(id, dto);
+        return ResponseEntity.ok(service.update(id, dto));
     }
 
     @DeleteMapping("/{id}")
