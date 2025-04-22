@@ -1,20 +1,25 @@
 package com.proj.masi.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
+import java.util.Objects;
+import java.util.UUID;
 
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name="uniterm_sequence",
         uniqueConstraints=@UniqueConstraint(columnNames = {"uniterm_id","position"}))
 public class UnitermSequence {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @Id @GeneratedValue
+    private UUID id;
 
-    @ManyToOne @JoinColumn(name="uniterm_id", nullable=false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "uniterm_id", nullable = false)
     private UnitermDef uniterm;
 
     @Column(nullable=false)
@@ -23,16 +28,20 @@ public class UnitermSequence {
     @Column(nullable=false)
     private String text;
 
-    public UnitermSequence() {}
-
-    public UnitermSequence(Integer position, String text, UnitermDef uniterm) {
-        this.position = position;
-        this.text     = text;
-        this.uniterm  = uniterm;
-    }
-
     @Override
     public String toString() {
         return "Seq{" + position + ":\"" + text + "\"}";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UnitermSequence)) return false;
+        return id != null && id.equals(((UnitermSequence) o).id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }
