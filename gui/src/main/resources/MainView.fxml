@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.proj.gui.controller.MainController">
+
+    <left>
+        <TableView fx:id="tableView" prefWidth="200">
+            <columns>
+                <TableColumn text="Name" fx:id="colName"/>
+                <TableColumn text="Description" fx:id="colDescription"/>
+            </columns>
+        </TableView>
+    </left>
+
+    <center>
+        <TreeView fx:id="treeView"/>
+    </center>
+
+    <bottom>
+        <HBox spacing="10" alignment="CENTER">
+            <Button text="Create" fx:id="btnCreate"/>
+            <Button text="Update" fx:id="btnUpdate"/>
+            <Button text="Delete" fx:id="btnDelete"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>
