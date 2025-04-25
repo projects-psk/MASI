@@ -2,6 +2,7 @@ package com.proj.masi.controller;
 
 import com.proj.masi.dto.UnitermDefDto;
 import com.proj.masi.service.UnitermService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import java.util.UUID;
 @RequestMapping("/api/uniterms")
 @RequiredArgsConstructor
 public class UnitermController {
+
     private final UnitermService service;
 
     @GetMapping
@@ -28,7 +30,9 @@ public class UnitermController {
     }
 
     @PostMapping
-    public ResponseEntity<UnitermDefDto> create(@RequestBody UnitermDefDto dto) {
+    public ResponseEntity<UnitermDefDto> create(
+            @Valid @RequestBody UnitermDefDto dto
+    ) {
         UnitermDefDto created = service.create(dto);
         URI location = URI.create("/api/uniterms/" + created.id());
         return ResponseEntity
@@ -39,7 +43,7 @@ public class UnitermController {
     @PutMapping("/{id}")
     public ResponseEntity<UnitermDefDto> update(
             @PathVariable UUID id,
-            @RequestBody UnitermDefDto dto
+            @Valid @RequestBody UnitermDefDto dto
     ) {
         return ResponseEntity.ok(service.update(id, dto));
     }

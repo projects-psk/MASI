@@ -49,7 +49,8 @@ public class UnitermServiceImpl implements UnitermService {
         UnitermDef existing = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ENTITY_NAME, id));
         UnitermDefMapper.updateEntity(existing, dto);
-        return UnitermDefMapper.toDto(existing);
+        UnitermDef saved = repo.save(existing);
+        return UnitermDefMapper.toDto(saved);
     }
 
     @Override

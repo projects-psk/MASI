@@ -1,10 +1,9 @@
 package com.proj.masi.dto;
 
+import com.proj.masi.dto.structure.TermDto;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import java.util.List;
 import java.util.UUID;
 
 public record UnitermDefDto(
@@ -18,9 +17,7 @@ public record UnitermDefDto(
         @NotNull(message = "Drawing properties must be provided")
         JsonNode drawingProps,
 
-        @NotNull @Size(min = 1, message = "Sequence must contain at least one step")
-        List<@NotBlank String> sequence,
+        @NotNull(message = "Structure must be provided")
+        TermDto structure
 
-        @NotNull @Size(min = 1, message = "Expansion must contain at least one step")
-        List<@NotBlank String> expansion
 ) {}
