@@ -1,6 +1,9 @@
 package com.proj.masi.controller;
 
+import com.proj.masi.dto.SaveCustomRequest;
+import com.proj.masi.dto.TransformRequest;
 import com.proj.masi.dto.UnitermDefDto;
+import com.proj.masi.dto.structure.TermDto;
 import com.proj.masi.service.UnitermService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,9 +38,7 @@ public class UnitermController {
     ) {
         UnitermDefDto created = service.create(dto);
         URI location = URI.create("/api/uniterms/" + created.id());
-        return ResponseEntity
-                .created(location)
-                .body(created);
+        return ResponseEntity.created(location).body(created);
     }
 
     @PutMapping("/{id}")
@@ -52,5 +53,22 @@ public class UnitermController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable UUID id) {
         service.delete(id);
+    }
+
+    @PostMapping("/transform")
+    public ResponseEntity<TermDto> transform(
+            @Valid @RequestBody TransformRequest req
+    ) {
+        TermDto result = service.transform(req);
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/save")
+    public ResponseEntity<UnitermDefDto> saveCustom(
+            @Valid @RequestBody SaveCustomRequest req
+    ) {
+        var saved = service.saveCustom(req);
+        URI location = URI.create("/api/uniterms/" + saved.id());
+        return ResponseEntity.created(location).body(saved);
     }
 }

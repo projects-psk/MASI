@@ -52,7 +52,7 @@ public class DataLoader implements CommandLineRunner {
                     .build();
 
             repo.save(seqExample);
-            log.info("✔️ Wstawiono SequenceAB = (A;B)");
+            log.info("Wstawiono SequenceAB = (A;B)");
         }
 
         if (repo.findByName("ParallelXZ").isEmpty()) {
@@ -79,10 +79,10 @@ public class DataLoader implements CommandLineRunner {
                     .build();
 
             repo.save(parExample);
-            log.info("✔️ Wstawiono ParallelXZ = [X,Z]");
+            log.info("Wstawiono ParallelXZ = [X,Z]");
         }
 
-        log.info("📋 Wszystkie definicje unitermów w bazie:");
+        log.info("Wszystkie definicje unitermów w bazie:");
         repo.findAll().forEach(u -> {
             try {
                 String astJson = objectMapper.writeValueAsString(u.getStructure());

@@ -1,5 +1,6 @@
 package com.proj.masi.config;
 
+import com.proj.masi.dto.structure.CustomDto;
 import com.proj.masi.dto.structure.ParallelDto;
 import com.proj.masi.dto.structure.SequenceDto;
 import com.proj.masi.dto.structure.UnitermDto;
@@ -17,7 +18,8 @@ public class JacksonConfig {
         mapper.registerSubtypes(
                 new NamedType(UnitermDto.class,   "uniterm"),
                 new NamedType(SequenceDto.class,  "sequence"),
-                new NamedType(ParallelDto.class,  "parallel")
+                new NamedType(ParallelDto.class,  "parallel"),
+                new NamedType(CustomDto.class,    "custom")
         );
         return mapper;
     }
