@@ -13,7 +13,7 @@ import javafx.scene.web.WebView;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class MainController {
@@ -48,12 +48,20 @@ public class MainController {
     private static void initTable(TableView<UnitermDefDto> tv,
                                   TableColumn<UnitermDefDto,String> c1,
                                   TableColumn<UnitermDefDto,String> c2,
-                                  java.util.function.Consumer<TermDto> onSelect) {
+                                  Consumer<TermDto> onSelect) {
 
         c1.setCellValueFactory(d -> new ReadOnlyStringWrapper(d.getValue().name()));
         c2.setCellValueFactory(d -> new ReadOnlyStringWrapper(d.getValue().description()));
+
         tv.getSelectionModel().selectedItemProperty()
-                .addListener((obs, o, s) -> { if (s != null) onSelect.accept(s.structure()); });
+                .addListener((obs, o, s) -> {
+                    if (s != null) onSelect.accept(s.structure());
+                });
+
+        tv.setOnMouseClicked(evt -> {
+            var sel = tv.getSelectionModel().getSelectedItem();
+            if (sel != null) onSelect.accept(sel.structure());
+        });
     }
 
     @FXML private void onRefresh()     { refreshList(); }
@@ -99,7 +107,7 @@ public class MainController {
     }
 
     private static List<UnitermDefDto> filter(List<UnitermDefDto> src, Class<? extends TermDto> cls) {
-        return src.stream().filter(d -> cls.isInstance(d.structure())).collect(Collectors.toList());
+        return src.stream().filter(d -> cls.isInstance(d.structure())).toList();
     }
 
     private void display(TermDto s) { displayStructure(s); displayAst(s); }
