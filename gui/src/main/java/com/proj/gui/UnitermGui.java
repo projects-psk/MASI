@@ -9,14 +9,14 @@ import javafx.stage.Stage;
 public class UnitermGui extends Application {
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/MainView.fxml"));
-        Scene scene = new Scene(root, 800, 600);
-        stage.setScene(scene);
+        var loader = new FXMLLoader(getClass().getResource("/MainView.fxml"));
+        var root = loader.load();
+        stage.setScene(new Scene((Parent) root, 900, 600));
         stage.setTitle("Uniterm Manager");
         stage.show();
     }
 
     public static void main(String[] args) {
-        launch();
+        launch(args);
     }
 }
