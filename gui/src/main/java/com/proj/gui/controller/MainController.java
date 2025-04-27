@@ -88,7 +88,6 @@ public class MainController {
         var req = new SaveCustomRequest(
                 "custom_" + UUID.randomUUID().toString( ).substring(0, 5),
                 "Wynik transformacji",
-                client.emptyProps(),
                 currentStructure
         );
         try {

@@ -77,7 +77,6 @@ public class UnitermServiceImpl implements UnitermService {
         UnitermDef def = UnitermDef.builder()
                 .name(req.name())
                 .description(req.description())
-                .drawingProps(req.drawingProps())
                 .structure(req.structure())
                 .build();
         var saved = repo.save(def);

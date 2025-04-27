@@ -12,7 +12,6 @@ public class UnitermDefMapper {
                 e.getId(),
                 e.getName(),
                 e.getDescription(),
-                e.getDrawingProps(),
                 e.getStructure()
         );
     }
@@ -21,7 +20,6 @@ public class UnitermDefMapper {
         UnitermDef e = new UnitermDef();
         e.setName(dto.name());
         e.setDescription(dto.description());
-        e.setDrawingProps(dto.drawingProps());
         e.setStructure(dto.structure());
         return e;
     }
@@ -29,7 +27,6 @@ public class UnitermDefMapper {
     public static void updateEntity(UnitermDef e, UnitermDefDto dto) {
         e.setName(dto.name());
         e.setDescription(dto.description());
-        e.setDrawingProps(dto.drawingProps());
         e.setStructure(dto.structure());
     }
 }

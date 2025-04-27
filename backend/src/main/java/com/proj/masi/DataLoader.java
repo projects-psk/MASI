@@ -1,6 +1,5 @@
 package com.proj.masi;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.proj.masi.dto.structure.ParallelDto;
 import com.proj.masi.dto.structure.SequenceDto;
@@ -27,7 +26,7 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     @Transactional
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         if (repo.findByName("SequenceAB").isEmpty()) {
             UnitermDto leafA = new UnitermDto("A");
             UnitermDto leafB = new UnitermDto("B");
@@ -36,18 +35,9 @@ public class DataLoader implements CommandLineRunner {
                     ";"
             );
 
-            JsonNode propsSeq = objectMapper.readTree("""
-              {
-                "fontSize": 12,
-                "fontFamily": "Arial",
-                "switched": false
-              }
-            """);
-
             UnitermDef seqExample = UnitermDef.builder()
                     .name("SequenceAB")
                     .description("Przykład sekwencjonowania A;B")
-                    .drawingProps(propsSeq)
                     .structure(seqAB)
                     .build();
 
@@ -63,18 +53,9 @@ public class DataLoader implements CommandLineRunner {
                     ","
             );
 
-            JsonNode propsPar = objectMapper.readTree("""
-              {
-                "fontSize": 12,
-                "fontFamily": "Arial",
-                "switched": false
-              }
-            """);
-
             UnitermDef parExample = UnitermDef.builder()
                     .name("ParallelXZ")
                     .description("Przykład zrównoleglenia [X,Z]")
-                    .drawingProps(propsPar)
                     .structure(parXZ)
                     .build();
 

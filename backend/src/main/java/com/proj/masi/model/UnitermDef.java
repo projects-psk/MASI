@@ -1,7 +1,6 @@
 package com.proj.masi.model;
 
 import com.proj.masi.dto.structure.TermDto;
-import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -22,10 +21,6 @@ public class UnitermDef {
 
     @Column(length = 1024)
     private String description;
-
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "drawing_props", columnDefinition = "jsonb")
-    private JsonNode drawingProps;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "structure", columnDefinition = "jsonb")
