@@ -18,7 +18,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class MainController {
 
@@ -72,21 +73,57 @@ public class MainController {
 
     @FXML
     private void onTransform() {
-        UnitermDefDto sel = Stream.of(tableView, tableView1, tableView2)
-                .map(t -> t.getSelectionModel().getSelectedItem())
-                .filter(java.util.Objects::nonNull)
-                .findFirst().orElse(null);
-        if (sel == null) return;
+        UnitermDefDto baseDef = tableView.getSelectionModel().getSelectedItem();
+        UnitermDefDto replDef = tableView1.getSelectionModel().getSelectedItem();
 
-        // TODO: wybór path i replacementId z GUI
-        var req = new TransformRequest(sel.id(), sel.id(), List.of(1));
-        try {
-            currentStructure = client.transform(req);
-            display(currentStructure);
-        } catch (IOException ex) {
-            showError(ex);
-        } catch (InterruptedException ex) { Thread.currentThread().interrupt();}
+        if (baseDef == null || replDef == null) {
+            new Alert(Alert.AlertType.WARNING,
+                    "Najpierw zaznacz sekwencjonowanie oraz paralelę.",
+                    ButtonType.OK).showAndWait();
+            return;
+        }
+
+        if (!(baseDef.structure() instanceof SequenceDto seq)) {
+            new Alert(Alert.AlertType.ERROR,
+                    "Zaznaczony base nie jest sekwencją!",
+                    ButtonType.OK).showAndWait();
+            return;
+        }
+        if (!(replDef.structure() instanceof ParallelDto)) {
+            new Alert(Alert.AlertType.ERROR,
+                    "Zaznaczony replacement nie jest paralelą!",
+                    ButtonType.OK).showAndWait();
+            return;
+        }
+
+        int size = seq.children().size();
+        List<Integer> indices = IntStream.range(0, size)
+                .boxed()
+                .collect(Collectors.toList());
+
+        ChoiceDialog<Integer> idxDialog = new ChoiceDialog<>(0, indices);
+        idxDialog.initOwner(tableView.getScene().getWindow());
+        idxDialog.setTitle("Wybierz pozycję");
+        idxDialog.setHeaderText("Podmień element sekwencji");
+        idxDialog.setContentText("Index (0–" + (size-1) + "):");
+
+        idxDialog.showAndWait().ifPresent(chosenIdx -> {
+            var req = new TransformRequest(
+                    baseDef.id(),
+                    replDef.id(),
+                    List.of(chosenIdx)
+            );
+            try {
+                currentStructure = client.transform(req);
+                display(currentStructure);
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+            } catch (IOException ioe) {
+                showError(ioe);
+            }
+        });
     }
+
 
     @FXML
     private void onSaveCustom() {
