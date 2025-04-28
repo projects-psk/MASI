@@ -6,9 +6,13 @@ import com.proj.masi.dto.*;
 import com.proj.masi.dto.structure.*;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.TreeItem;
+import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.List;
@@ -79,22 +83,57 @@ public class MainController {
         try {
             currentStructure = client.transform(req);
             display(currentStructure);
-        } catch (IOException | InterruptedException ex) { showError(ex); }
+        } catch (IOException ex) {
+            showError(ex);
+        } catch (InterruptedException ex) { Thread.currentThread().interrupt();}
     }
 
     @FXML
     private void onSaveCustom() {
         if (currentStructure == null) return;
+
         var req = new SaveCustomRequest(
-                "custom_" + UUID.randomUUID().toString( ).substring(0, 5),
-                "Wynik transformacji",
+                "custom_" + UUID.randomUUID().toString().substring(0, 5),
+                "Wynik przekształcenia",
                 currentStructure
         );
+
         try {
             client.saveCustom(req);
             refreshList();
-        } catch (IOException | InterruptedException ex) { showError(ex); }
+        } catch (IOException ex) {
+            showError(ex);
+        } catch (InterruptedException ex) { Thread.currentThread().interrupt();}
     }
+
+
+    @FXML
+    private void onNew() throws IOException {
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/CreateDialog.fxml")
+        );
+        VBox pane = loader.load();
+        CreateDialogController ctrl = loader.getController();
+
+        Stage dialog = new Stage();
+        dialog.initOwner(tableView.getScene().getWindow());
+        dialog.setScene(new Scene(pane));
+        dialog.setTitle("Nowa definicja");
+        ctrl.setDialogStage(dialog);
+        ctrl.setOnCreated(dto -> {
+            try {
+                client.create(dto);
+                refreshList();
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                showError(ex);
+            } catch (IOException ex) {
+                showError(ex);
+            }
+        });
+        dialog.showAndWait();
+    }
+
 
     private void refreshList() {
         try {
@@ -102,7 +141,9 @@ public class MainController {
             tableView .getItems().setAll(filter(list, SequenceDto.class));
             tableView1.getItems().setAll(filter(list, ParallelDto.class));
             tableView2.getItems().setAll(filter(list, CustomDto  .class));
-        } catch (IOException | InterruptedException ex) { showError(ex); }
+        } catch (IOException ex) {
+            showError(ex);
+        } catch (InterruptedException ex) { Thread.currentThread().interrupt();}
     }
 
     private static List<UnitermDefDto> filter(List<UnitermDefDto> src, Class<? extends TermDto> cls) {

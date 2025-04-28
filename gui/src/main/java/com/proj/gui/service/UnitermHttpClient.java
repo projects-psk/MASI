@@ -2,11 +2,11 @@ package com.proj.gui.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.proj.masi.dto.TransformRequest;
 import com.proj.masi.dto.SaveCustomRequest;
 import com.proj.masi.dto.UnitermDefDto;
 import com.proj.masi.dto.structure.TermDto;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
 import java.net.URI;
@@ -28,6 +28,16 @@ public class UnitermHttpClient {
         var body = client.send(req, HttpResponse.BodyHandlers.ofString()).body();
         return mapper.readValue(body, new TypeReference<>() {
         });
+    }
+
+    public UnitermDefDto create(UnitermDefDto toCreate) throws IOException, InterruptedException {
+        String json = mapper.writeValueAsString(toCreate);
+        HttpRequest req = HttpRequest.newBuilder(URI.create(BASE_URL))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+        String body = client.send(req, HttpResponse.BodyHandlers.ofString()).body();
+        return mapper.readValue(body, UnitermDefDto.class);
     }
 
     public TermDto transform(TransformRequest reqDto) throws IOException, InterruptedException {

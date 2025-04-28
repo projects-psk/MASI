@@ -16,17 +16,18 @@
             <Label text="Definicje:" />
             <TableView fx:id="tableView" prefHeight="250.0" prefWidth="250">
                 <columns>
-                    <TableColumn fx:id="colName" prefWidth="120" text="Name" />
-                    <TableColumn fx:id="colDesc" prefWidth="120" text="Description" />
+                    <TableColumn fx:id="colName" prefWidth="120" text="Nazwa" />
+                    <TableColumn fx:id="colDesc" prefWidth="120" text="Opis" />
                 </columns>
             </TableView>
          <TableView fx:id="tableView1" layoutX="20.0" layoutY="43.0" prefHeight="250.0" prefWidth="250">
             <columns>
-               <TableColumn fx:id="colName1" prefWidth="120" text="Name" />
-               <TableColumn fx:id="colDesc1" prefWidth="120" text="Description" />
+               <TableColumn fx:id="colName1" prefWidth="120" text="Nazwa" />
+               <TableColumn fx:id="colDesc1" prefWidth="120" text="Opis" />
             </columns>
          </TableView>
             <Button alignment="CENTER" contentDisplay="CENTER" onAction="#onRefresh" text="Odśwież" textAlignment="CENTER" />
+            <Button text="Nowy..." onAction="#onNew" />
         </VBox>
     </left>
 
@@ -48,8 +49,8 @@
                 <Insets bottom="10" left="10" right="10" top="10" />
             </padding>
 
-            <Button onAction="#onTransform" text="Transform" />
-            <Button onAction="#onSaveCustom" text="Save Result" />
+            <Button onAction="#onTransform" text="Przekształć" />
+            <Button onAction="#onSaveCustom" text="Zapisz" />
         </HBox>
     </bottom>
    <right>
@@ -61,8 +62,8 @@
            <Label text="Wyniki:" />
            <TableView fx:id="tableView2" prefHeight="500.0" prefWidth="250">
                <columns>
-                   <TableColumn fx:id="colName2" prefWidth="120" text="Name" />
-                   <TableColumn fx:id="colDesc2" prefWidth="120" text="Description" />
+                   <TableColumn fx:id="colName2" prefWidth="120" text="Nazwa" />
+                   <TableColumn fx:id="colDesc2" prefWidth="120" text="Opis" />
                </columns>
            </TableView>
        </VBox>

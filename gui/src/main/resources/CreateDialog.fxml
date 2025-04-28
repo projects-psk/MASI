@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.proj.gui.controller.CreateDialogController"
+      spacing="10">
+
+    <fx:define>
+        <ToggleGroup fx:id="typeGroup"/>
+    </fx:define>
+
+    <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+
+    <HBox spacing="10">
+        <Label text="Nazwa:"/>
+        <TextField fx:id="tfName" HBox.hgrow="ALWAYS"/>
+    </HBox>
+
+    <HBox spacing="10">
+        <Label text="Opis:"/>
+        <TextField fx:id="tfDesc" HBox.hgrow="ALWAYS"/>
+    </HBox>
+
+    <HBox spacing="20">
+        <RadioButton fx:id="rbSeq" text="Sekwencjonowanie" toggleGroup="$typeGroup" selected="true"/>
+        <RadioButton fx:id="rbPar" text="Zrównoleglanie" toggleGroup="$typeGroup"/>
+        <Label text="Separator:"/>
+        <ComboBox fx:id="cbSep">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value=";"/>
+                    <String fx:value=","/>
+                </FXCollections>
+            </items>
+        </ComboBox>
+    </HBox>
+
+    <Label text="Unitermy:"/>
+    <VBox fx:id="childrenBox" spacing="5"/>
+
+    <HBox spacing="10">
+        <Button text="Dodaj uniterm"    onAction="#onAddChild"/>
+        <Button text="Usuń ostatni"  onAction="#onRemoveChild"/>
+    </HBox>
+
+    <HBox spacing="20" alignment="CENTER_RIGHT">
+        <Button text="Anuluj" fx:id="btnCancel" onAction="#onCancel" cancelButton="true"/>
+        <Button text="Stwórz" fx:id="btnCreate" onAction="#onCreate" defaultButton="true"/>
+    </HBox>
+</VBox>
