@@ -12,6 +12,7 @@ public interface UnitermService {
     UnitermDefDto create(UnitermDefDto dto);
     UnitermDefDto update(UUID id, UnitermDefDto dto);
     void delete(UUID id);
+    void deleteResult(UUID id);
     TermDto transform(TransformRequest req);
     UnitermDefDto saveCustom(SaveCustomRequest req);
     TransformResultDto saveTransform(

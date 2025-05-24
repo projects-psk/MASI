@@ -53,20 +53,24 @@
             <Button onAction="#onSaveCustom" text="Zapisz" />
         </HBox>
     </bottom>
-   <right>
-       <VBox spacing="5">
-           <padding>
-               <Insets bottom="10" left="10" right="10" top="10" />
-           </padding>
+    <right>
+        <VBox spacing="5">
+            <padding>
+                <Insets bottom="10" left="10" right="10" top="10" />
+            </padding>
 
-           <Label text="Wyniki:" />
-           <TableView fx:id="resultsTable" prefHeight="500.0" prefWidth="250">
-               <columns>
-                   <TableColumn fx:id="colResName" prefWidth="120" text="Nazwa" />
-                   <TableColumn fx:id="colResDesc" prefWidth="120" text="Opis" />
-               </columns>
-           </TableView>
-       </VBox>
-   </right>
+            <Label text="Wyniki:" />
 
+            <TableView fx:id="resultsTable" prefHeight="400.0" prefWidth="250">
+                <columns>
+                    <TableColumn fx:id="colResName"  prefWidth="120" text="Nazwa" />
+                    <TableColumn fx:id="colResDesc"  prefWidth="120" text="Opis"  />
+                </columns>
+            </TableView>
+
+            <HBox spacing="10" alignment="CENTER">
+                <Button text="Usuń wynik" onAction="#onDeleteResult" />
+            </HBox>
+        </VBox>
+    </right>
 </BorderPane>

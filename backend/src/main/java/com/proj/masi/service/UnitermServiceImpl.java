@@ -63,6 +63,14 @@ public class UnitermServiceImpl implements UnitermService {
     }
 
     @Override
+    @Transactional
+    public void deleteResult(UUID id) {
+        var existing = resultRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("TransformResult", id));
+        resultRepo.delete(existing);
+    }
+
+    @Override
     public TermDto transform(TransformRequest req) {
         var base = repo.findById(req.baseId())
                 .orElseThrow(() -> new ResourceNotFoundException(ENTITY, req.baseId()));

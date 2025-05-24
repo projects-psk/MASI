@@ -53,6 +53,12 @@ public class UnitermController {
         service.delete(id);
     }
 
+    @DeleteMapping("/transform/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTransformResult(@PathVariable UUID id) {
+        service.deleteResult(id);
+    }
+
     @PostMapping("/transform")
     public ResponseEntity<TermDto> transform(
             @Valid @RequestBody TransformRequest req

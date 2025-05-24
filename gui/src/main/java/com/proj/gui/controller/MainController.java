@@ -37,6 +37,7 @@ public class MainController {
 
     @FXML private WebView  webView;
     @FXML private TreeView<String> astView;
+    @FXML private Button btnDeleteResult;
 
     private final UnitermHttpClient client = new UnitermHttpClient();
     private TermDto currentStructure;
@@ -213,6 +214,33 @@ public class MainController {
             Thread.currentThread().interrupt();
         } catch (Exception ex) {
             showError(ex);
+        }
+    }
+
+    @FXML
+    private void onDeleteResult() {
+        TransformResultDto selected = resultsTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            new Alert(Alert.AlertType.WARNING, "Najpierw wybierz wynik do usunięcia.", ButtonType.OK)
+                    .showAndWait();
+            return;
+        }
+
+        boolean ok = new Alert(Alert.AlertType.CONFIRMATION,
+                "Na pewno usunąć wynik \"" + selected.name() + "\"?",
+                ButtonType.YES, ButtonType.NO).showAndWait()
+                .filter(b -> b == ButtonType.YES).isPresent();
+
+        if (!ok) return;
+
+        try {
+            client.deleteTransformResult(selected.id());
+            resultsTable.getItems().remove(selected);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            showError(ie);
+        } catch (IOException ioe) {
+            showError(ioe);
         }
     }
 

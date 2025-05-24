@@ -66,6 +66,13 @@ public class UnitermHttpClient {
         client.send(req, HttpResponse.BodyHandlers.discarding());
     }
 
+    public void deleteTransformResult(UUID id) throws IOException, InterruptedException {
+        var req = HttpRequest.newBuilder(URI.create(BASE_URL + "/transform/" + id))
+                .DELETE()
+                .build();
+        client.send(req, HttpResponse.BodyHandlers.discarding());
+    }
+
     public ObjectNode emptyProps() {
         return mapper.createObjectNode();
     }
