@@ -1,4 +1,4 @@
-package com.proj.masi.dto;
+package com.proj.masi.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

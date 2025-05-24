@@ -1,6 +1,6 @@
 package com.proj.gui.controller;
 
-import com.proj.masi.dto.UnitermDefDto;
+import com.proj.masi.dto.response.UnitermDefDto;
 import com.proj.masi.dto.structure.ParallelDto;
 import com.proj.masi.dto.structure.SequenceDto;
 import com.proj.masi.dto.structure.TermDto;

@@ -2,7 +2,10 @@ package com.proj.gui.controller;
 
 import com.proj.gui.service.UnitermHttpClient;
 import com.proj.gui.util.TexUtils;
-import com.proj.masi.dto.*;
+import com.proj.masi.dto.request.SaveTransformRequest;
+import com.proj.masi.dto.request.TransformRequest;
+import com.proj.masi.dto.response.TransformResultDto;
+import com.proj.masi.dto.response.UnitermDefDto;
 import com.proj.masi.dto.structure.*;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.fxml.FXML;

@@ -1,6 +1,10 @@
 package com.proj.masi.controller;
 
-import com.proj.masi.dto.*;
+import com.proj.masi.dto.request.SaveCustomRequest;
+import com.proj.masi.dto.request.SaveTransformRequest;
+import com.proj.masi.dto.request.TransformRequest;
+import com.proj.masi.dto.response.TransformResultDto;
+import com.proj.masi.dto.response.UnitermDefDto;
 import com.proj.masi.dto.structure.TermDto;
 import com.proj.masi.service.UnitermService;
 import jakarta.validation.Valid;

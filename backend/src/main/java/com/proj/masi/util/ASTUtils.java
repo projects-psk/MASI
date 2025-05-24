@@ -1,4 +1,4 @@
-package com.proj.masi.service;
+package com.proj.masi.util;
 
 import com.proj.masi.dto.structure.ParallelDto;
 import com.proj.masi.dto.structure.SequenceDto;

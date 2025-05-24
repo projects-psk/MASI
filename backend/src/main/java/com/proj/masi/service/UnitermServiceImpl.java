@@ -1,6 +1,10 @@
 package com.proj.masi.service;
 
-import com.proj.masi.dto.*;
+import com.proj.masi.dto.request.SaveCustomRequest;
+import com.proj.masi.dto.request.SaveTransformRequest;
+import com.proj.masi.dto.request.TransformRequest;
+import com.proj.masi.dto.response.TransformResultDto;
+import com.proj.masi.dto.response.UnitermDefDto;
 import com.proj.masi.dto.structure.CustomDto;
 import com.proj.masi.dto.structure.TermDto;
 import com.proj.masi.mapper.UnitermDefMapper;
@@ -8,6 +12,7 @@ import com.proj.masi.model.TransformResult;
 import com.proj.masi.model.UnitermDef;
 import com.proj.masi.repository.TransformResultRepository;
 import com.proj.masi.repository.UnitermDefRepository;
+import com.proj.masi.util.ASTUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

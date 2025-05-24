@@ -1,6 +1,6 @@
 package com.proj.masi.mapper;
 
-import com.proj.masi.dto.UnitermDefDto;
+import com.proj.masi.dto.response.UnitermDefDto;
 import com.proj.masi.model.UnitermDef;
 
 public class UnitermDefMapper {

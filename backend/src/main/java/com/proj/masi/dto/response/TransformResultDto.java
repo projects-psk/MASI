@@ -1,4 +1,4 @@
-package com.proj.masi.dto;
+package com.proj.masi.dto.response;
 
 import com.proj.masi.dto.structure.TermDto;
 import java.util.UUID;
