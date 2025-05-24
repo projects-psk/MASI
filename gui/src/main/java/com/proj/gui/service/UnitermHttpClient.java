@@ -3,9 +3,7 @@ package com.proj.gui.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.proj.masi.dto.TransformRequest;
-import com.proj.masi.dto.SaveCustomRequest;
-import com.proj.masi.dto.UnitermDefDto;
+import com.proj.masi.dto.*;
 import com.proj.masi.dto.structure.TermDto;
 
 import java.io.IOException;
@@ -67,5 +65,28 @@ public class UnitermHttpClient {
 
     public ObjectNode emptyProps() {
         return mapper.createObjectNode();
+    }
+
+    public TransformResultDto saveTransform(
+            SaveTransformRequest reqDto
+    ) throws IOException, InterruptedException {
+        String json = mapper.writeValueAsString(reqDto);
+        HttpRequest req = HttpRequest.newBuilder(
+                        URI.create(BASE_URL + "/transform/save"))
+                .header("Content-Type","application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+        String body = client.send(req, HttpResponse.BodyHandlers.ofString()).body();
+        return mapper.readValue(body, TransformResultDto.class);
+    }
+
+    public List<TransformResultDto> findAllTransformResults() throws IOException, InterruptedException {
+        HttpRequest req = HttpRequest.newBuilder(
+                        URI.create(BASE_URL + "/transform/results"))
+                .GET()
+                .build();
+        String body = client.send(req, HttpResponse.BodyHandlers.ofString()).body();
+        return mapper.readValue(body,
+                new TypeReference<List<TransformResultDto>>() {});
     }
 }

@@ -1,8 +1,6 @@
 package com.proj.masi.controller;
 
-import com.proj.masi.dto.SaveCustomRequest;
-import com.proj.masi.dto.TransformRequest;
-import com.proj.masi.dto.UnitermDefDto;
+import com.proj.masi.dto.*;
 import com.proj.masi.dto.structure.TermDto;
 import com.proj.masi.service.UnitermService;
 import jakarta.validation.Valid;
@@ -70,5 +68,19 @@ public class UnitermController {
         var saved = service.saveCustom(req);
         URI location = URI.create("/api/uniterms/" + saved.id());
         return ResponseEntity.created(location).body(saved);
+    }
+
+    @PostMapping("/transform/save")
+    public ResponseEntity<TransformResultDto> saveTransform(
+        @Valid @RequestBody SaveTransformRequest req
+    ) {
+        TransformResultDto dto = service.saveTransform(req);
+        URI location = URI.create("/api/uniterms/transform/save/" + dto.id());
+        return ResponseEntity.created(location).body(dto);
+    }
+
+    @GetMapping("/transform/results")
+    public List<TransformResultDto> getAllTransformResults() {
+        return service.findAllTransformResults();
     }
 }
