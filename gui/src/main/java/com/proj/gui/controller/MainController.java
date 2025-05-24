@@ -2,7 +2,10 @@ package com.proj.gui.controller;
 
 import com.proj.gui.service.UnitermHttpClient;
 import com.proj.gui.util.TexUtils;
-import com.proj.masi.dto.*;
+import com.proj.masi.dto.request.SaveTransformRequest;
+import com.proj.masi.dto.request.TransformRequest;
+import com.proj.masi.dto.response.TransformResultDto;
+import com.proj.masi.dto.response.UnitermDefDto;
 import com.proj.masi.dto.structure.*;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.fxml.FXML;
@@ -15,11 +18,10 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class MainController {
 
@@ -32,22 +34,28 @@ public class MainController {
     @FXML private TableColumn<UnitermDefDto, String> colName1;
     @FXML private TableColumn<UnitermDefDto, String> colDesc1;
 
-    @FXML private TableView<UnitermDefDto> tableView2;
-    @FXML private TableColumn<UnitermDefDto, String> colName2;
-    @FXML private TableColumn<UnitermDefDto, String> colDesc2;
+    @FXML private TableView<TransformResultDto> resultsTable;
+    @FXML private TableColumn<TransformResultDto, String> colResName;
+    @FXML private TableColumn<TransformResultDto, String> colResDesc;
 
     @FXML private WebView  webView;
     @FXML private TreeView<String> astView;
+    @FXML private Button btnDeleteResult;
 
     private final UnitermHttpClient client = new UnitermHttpClient();
     private TermDto currentStructure;
+    private UUID lastBaseId;
+    private UUID lastReplacementId;
+    private List<Integer> lastPath;
 
     @FXML
     private void initialize() {
         initTable(tableView,  colName,  colDesc,  this::display);
         initTable(tableView1, colName1, colDesc1, this::display);
-        initTable(tableView2, colName2, colDesc2, this::display);
+        initResultTable(colResName, colResDesc);
         refreshList();
+        refreshResults();
+
     }
 
     private static void initTable(TableView<UnitermDefDto> tv,
@@ -69,7 +77,17 @@ public class MainController {
         });
     }
 
-    @FXML private void onRefresh()     { refreshList(); }
+    private void initResultTable(TableColumn<TransformResultDto,String> c1,
+                                 TableColumn<TransformResultDto,String> c2) {
+        c1.setCellValueFactory(d -> new ReadOnlyStringWrapper(d.getValue().name()));
+        c2.setCellValueFactory(d -> new ReadOnlyStringWrapper(d.getValue().description()));
+    }
+
+
+    @FXML private void onRefresh(){
+        refreshList();
+        refreshResults();
+    }
 
     @FXML
     private void onTransform() {
@@ -97,9 +115,11 @@ public class MainController {
         }
 
         int size = seq.children().size();
-        List<Integer> indices = IntStream.range(0, size)
-                .boxed()
-                .collect(Collectors.toList());
+        List<Integer> indices = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            Integer integer = i;
+            indices.add(integer);
+        }
 
         ChoiceDialog<Integer> idxDialog = new ChoiceDialog<>(0, indices);
         idxDialog.initOwner(tableView.getScene().getWindow());
@@ -108,12 +128,16 @@ public class MainController {
         idxDialog.setContentText("Index (0–" + (size-1) + "):");
 
         idxDialog.showAndWait().ifPresent(chosenIdx -> {
-            var req = new TransformRequest(
-                    baseDef.id(),
-                    replDef.id(),
-                    List.of(chosenIdx)
-            );
+            lastBaseId        = baseDef.id();
+            lastReplacementId = replDef.id();
+            lastPath          = List.of(chosenIdx);
+
             try {
+                var req = new TransformRequest(
+                        lastBaseId,
+                        lastReplacementId,
+                        lastPath
+                );
                 currentStructure = client.transform(req);
                 display(currentStructure);
             } catch (InterruptedException ie) {
@@ -124,25 +148,28 @@ public class MainController {
         });
     }
 
-
     @FXML
     private void onSaveCustom() {
         if (currentStructure == null) return;
 
-        var req = new SaveCustomRequest(
-                "custom_" + UUID.randomUUID().toString().substring(0, 5),
+        var req = new SaveTransformRequest(
+                "result_" + UUID.randomUUID().toString().substring(0,5),
                 "Wynik przekształcenia",
                 currentStructure
         );
-
         try {
-            client.saveCustom(req);
-            refreshList();
-        } catch (IOException ex) {
-            showError(ex);
-        } catch (InterruptedException ex) { Thread.currentThread().interrupt();}
+            TransformResultDto result = client.saveTransform(req);
+            new Alert(Alert.AlertType.INFORMATION,
+                    "Wynik zapisano z id = " + result.id(),
+                    ButtonType.OK).showAndWait();
+            resultsTable.getItems().add(result);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            showError(ie);
+        } catch (IOException ioe) {
+            showError(ioe);
+        }
     }
-
 
     @FXML
     private void onNew() throws IOException {
@@ -177,10 +204,121 @@ public class MainController {
             var list = client.findAll();
             tableView .getItems().setAll(filter(list, SequenceDto.class));
             tableView1.getItems().setAll(filter(list, ParallelDto.class));
-            tableView2.getItems().setAll(filter(list, CustomDto  .class));
         } catch (IOException ex) {
             showError(ex);
         } catch (InterruptedException ex) { Thread.currentThread().interrupt();}
+    }
+
+    private void refreshResults() {
+        try {
+            var list = client.findAllTransformResults();
+            resultsTable.getItems().setAll(list);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        } catch (Exception ex) {
+            showError(ex);
+        }
+    }
+
+    @FXML
+    private void onDeleteResult() {
+        TransformResultDto selected = resultsTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            new Alert(Alert.AlertType.WARNING, "Najpierw wybierz wynik do usunięcia.", ButtonType.OK)
+                    .showAndWait();
+            return;
+        }
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                "Na pewno usunąć wynik \"" + selected.name() + "\"?",
+                ButtonType.YES, ButtonType.NO
+        );
+        alert.setHeaderText(null);
+        DialogPane dp = alert.getDialogPane();
+        ((Button) dp.lookupButton(ButtonType.YES)).setText("Tak");
+        ((Button) dp.lookupButton(ButtonType.NO )).setText("Nie");
+
+        alert.showAndWait()
+                .filter(bt -> bt == ButtonType.YES)
+                .ifPresent(bt -> {
+                    try {
+                        client.deleteTransformResult(selected.id());
+                        resultsTable.getItems().remove(selected);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        showError(ie);
+                    } catch (IOException ioe) {
+                        showError(ioe);
+                    }
+                });
+    }
+
+    @FXML
+    private void onDeleteSequenceDefinition() {
+        UnitermDefDto sel = tableView.getSelectionModel().getSelectedItem();
+        if (sel == null) {
+            new Alert(Alert.AlertType.WARNING,
+                    "Najpierw wybierz definicję sekwencjowania.", ButtonType.OK
+            ).showAndWait();
+            return;
+        }
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                "Na pewno usunąć definicję sekwencjowania„" + sel.name() + "”?",
+                ButtonType.YES, ButtonType.NO
+        );
+        alert.setHeaderText(null);
+        DialogPane dp = alert.getDialogPane();
+        ((Button) dp.lookupButton(ButtonType.YES)).setText("Tak");
+        ((Button) dp.lookupButton(ButtonType.NO )).setText("Nie");
+
+        alert.showAndWait()
+                .filter(bt -> bt == ButtonType.YES)
+                .ifPresent(bt -> {
+                    try {
+                        client.delete(sel.id());
+                        tableView.getItems().remove(sel);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        showError(ie);
+                    } catch (IOException ioe) {
+                        showError(ioe);
+                    }
+                });
+    }
+
+    @FXML
+    private void onDeleteParallelDefinition() {
+        UnitermDefDto sel = tableView1.getSelectionModel().getSelectedItem();
+        if (sel == null) {
+            new Alert(Alert.AlertType.WARNING,
+                    "Najpierw wybierz definicję zrównoleglenia.", ButtonType.OK
+            ).showAndWait();
+            return;
+        }
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                "Na pewno usunąć definicję zrównoleglenia „" + sel.name() + "”?",
+                ButtonType.YES, ButtonType.NO
+        );
+        alert.setHeaderText(null);
+        DialogPane dp = alert.getDialogPane();
+        ((Button) dp.lookupButton(ButtonType.YES)).setText("Tak");
+        ((Button) dp.lookupButton(ButtonType.NO )).setText("Nie");
+
+        alert.showAndWait()
+                .filter(bt -> bt == ButtonType.YES)
+                .ifPresent(bt -> {
+                    try {
+                        client.delete(sel.id());
+                        tableView1.getItems().remove(sel);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        showError(ie);
+                    } catch (IOException ioe) {
+                        showError(ioe);
+                    }
+                });
     }
 
     private static List<UnitermDefDto> filter(List<UnitermDefDto> src, Class<? extends TermDto> cls) {

@@ -5,7 +5,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.proj.gui.controller.MainController">
+<BorderPane xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.proj.gui.controller.MainController">
 
     <left>
         <VBox spacing="5">
@@ -13,21 +15,32 @@
                 <Insets bottom="10" left="10" right="10" top="10" />
             </padding>
 
-            <Label text="Definicje:" />
-            <TableView fx:id="tableView" prefHeight="250.0" prefWidth="250">
+            <Label text="Definicje sekwencjowania:" />
+            <TableView fx:id="tableView" prefHeight="200.0" prefWidth="250.0">
                 <columns>
-                    <TableColumn fx:id="colName" prefWidth="120" text="Nazwa" />
-                    <TableColumn fx:id="colDesc" prefWidth="120" text="Opis" />
+                    <TableColumn fx:id="colName" prefWidth="120.0" text="Nazwa"/>
+                    <TableColumn fx:id="colDesc" prefWidth="120.0" text="Opis"/>
                 </columns>
             </TableView>
-         <TableView fx:id="tableView1" layoutX="20.0" layoutY="43.0" prefHeight="250.0" prefWidth="250">
-            <columns>
-               <TableColumn fx:id="colName1" prefWidth="120" text="Nazwa" />
-               <TableColumn fx:id="colDesc1" prefWidth="120" text="Opis" />
-            </columns>
-         </TableView>
-            <Button alignment="CENTER" contentDisplay="CENTER" onAction="#onRefresh" text="Odśwież" textAlignment="CENTER" />
-            <Button text="Nowy..." onAction="#onNew" />
+            <HBox spacing="10" alignment="CENTER">
+                <Button text="Usuń definicję" onAction="#onDeleteSequenceDefinition"/>
+            </HBox>
+
+            <Label text="Definicje zrównoleglenia:" />
+            <TableView fx:id="tableView1" prefHeight="200.0" prefWidth="250.0">
+                <columns>
+                    <TableColumn fx:id="colName1" prefWidth="120.0" text="Nazwa"/>
+                    <TableColumn fx:id="colDesc1" prefWidth="120.0" text="Opis"/>
+                </columns>
+            </TableView>
+            <HBox spacing="10" alignment="CENTER">
+                <Button text="Usuń definicję" onAction="#onDeleteParallelDefinition"/>
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER">
+                <Button text="Odśwież" onAction="#onRefresh"/>
+                <Button text="Nowy..." onAction="#onNew"/>
+            </HBox>
         </VBox>
     </left>
 
@@ -53,20 +66,24 @@
             <Button onAction="#onSaveCustom" text="Zapisz" />
         </HBox>
     </bottom>
-   <right>
-       <VBox spacing="5">
-           <padding>
-               <Insets bottom="10" left="10" right="10" top="10" />
-           </padding>
+    <right>
+        <VBox spacing="5">
+            <padding>
+                <Insets bottom="10" left="10" right="10" top="10" />
+            </padding>
 
-           <Label text="Wyniki:" />
-           <TableView fx:id="tableView2" prefHeight="500.0" prefWidth="250">
-               <columns>
-                   <TableColumn fx:id="colName2" prefWidth="120" text="Nazwa" />
-                   <TableColumn fx:id="colDesc2" prefWidth="120" text="Opis" />
-               </columns>
-           </TableView>
-       </VBox>
-   </right>
+            <Label text="Wyniki:" />
 
+            <TableView fx:id="resultsTable" prefHeight="400.0" prefWidth="250">
+                <columns>
+                    <TableColumn fx:id="colResName"  prefWidth="120" text="Nazwa" />
+                    <TableColumn fx:id="colResDesc"  prefWidth="120" text="Opis"  />
+                </columns>
+            </TableView>
+
+            <HBox spacing="10" alignment="CENTER">
+                <Button text="Usuń wynik" onAction="#onDeleteResult" />
+            </HBox>
+        </VBox>
+    </right>
 </BorderPane>

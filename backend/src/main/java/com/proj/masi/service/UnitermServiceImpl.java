@@ -1,13 +1,18 @@
 package com.proj.masi.service;
 
-import com.proj.masi.dto.SaveCustomRequest;
-import com.proj.masi.dto.TransformRequest;
-import com.proj.masi.dto.UnitermDefDto;
+import com.proj.masi.dto.request.SaveCustomRequest;
+import com.proj.masi.dto.request.SaveTransformRequest;
+import com.proj.masi.dto.request.TransformRequest;
+import com.proj.masi.dto.response.TransformResultDto;
+import com.proj.masi.dto.response.UnitermDefDto;
 import com.proj.masi.dto.structure.CustomDto;
 import com.proj.masi.dto.structure.TermDto;
 import com.proj.masi.mapper.UnitermDefMapper;
+import com.proj.masi.model.TransformResult;
 import com.proj.masi.model.UnitermDef;
+import com.proj.masi.repository.TransformResultRepository;
 import com.proj.masi.repository.UnitermDefRepository;
+import com.proj.masi.util.ASTUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +26,7 @@ public class UnitermServiceImpl implements UnitermService {
 
     private static final String ENTITY = "UnitermDef";
     private final UnitermDefRepository repo;
+    private final TransformResultRepository resultRepo;
 
     @Override
     public List<UnitermDefDto> findAll() {
@@ -62,6 +68,14 @@ public class UnitermServiceImpl implements UnitermService {
     }
 
     @Override
+    @Transactional
+    public void deleteResult(UUID id) {
+        var existing = resultRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("TransformResult", id));
+        resultRepo.delete(existing);
+    }
+
+    @Override
     public TermDto transform(TransformRequest req) {
         var base = repo.findById(req.baseId())
                 .orElseThrow(() -> new ResourceNotFoundException(ENTITY, req.baseId()));
@@ -81,5 +95,32 @@ public class UnitermServiceImpl implements UnitermService {
                 .build();
         var saved = repo.save(def);
         return UnitermDefMapper.toDto(saved);
+    }
+
+    @Override
+    @Transactional
+    public TransformResultDto saveTransform(SaveTransformRequest req) {
+        TransformResult entity = TransformResult.builder()
+                .name(req.name())
+                .description(req.description())
+                .structure(req.structure())
+                .build();
+
+        entity = resultRepo.save(entity);
+        return new TransformResultDto(
+                entity.getId(),
+                entity.getName(),
+                entity.getDescription(),
+                entity.getStructure()
+        );
+    }
+
+    @Override
+    public List<TransformResultDto> findAllTransformResults() {
+        return resultRepo.findAll().stream()
+                .map(r -> new TransformResultDto(r.getId(), r.getName(),
+                        r.getDescription(),
+                        r.getStructure()))
+                .toList();
     }
 }

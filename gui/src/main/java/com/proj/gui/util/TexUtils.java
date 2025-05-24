@@ -20,10 +20,10 @@ public final class TexUtils {
 
     public static String toTex(TermDto node) {
         return switch (node) {
-            case UnitermDto u       -> esc(u.name());
-            case SequenceDto s      -> renderSequence(s);
-            case ParallelDto p      -> renderParallel(p);
-            case CustomDto   c      -> toTex(c.root());
+            case UnitermDto(String name) -> esc(name);
+            case SequenceDto s -> renderSequence(s);
+            case ParallelDto p -> renderParallel(p);
+            case CustomDto(var root) -> toTex(root);
             default -> throw new IllegalArgumentException("Unknown TermDto: " + node);
         };
     }
