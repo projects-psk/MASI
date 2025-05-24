@@ -226,22 +226,96 @@ public class MainController {
             return;
         }
 
-        boolean ok = new Alert(Alert.AlertType.CONFIRMATION,
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
                 "Na pewno usunąć wynik \"" + selected.name() + "\"?",
-                ButtonType.YES, ButtonType.NO).showAndWait()
-                .filter(b -> b == ButtonType.YES).isPresent();
+                ButtonType.YES, ButtonType.NO
+        );
+        alert.setHeaderText(null);
+        DialogPane dp = alert.getDialogPane();
+        ((Button) dp.lookupButton(ButtonType.YES)).setText("Tak");
+        ((Button) dp.lookupButton(ButtonType.NO )).setText("Nie");
 
-        if (!ok) return;
+        alert.showAndWait()
+                .filter(bt -> bt == ButtonType.YES)
+                .ifPresent(bt -> {
+                    try {
+                        client.deleteTransformResult(selected.id());
+                        resultsTable.getItems().remove(selected);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        showError(ie);
+                    } catch (IOException ioe) {
+                        showError(ioe);
+                    }
+                });
+    }
 
-        try {
-            client.deleteTransformResult(selected.id());
-            resultsTable.getItems().remove(selected);
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
-            showError(ie);
-        } catch (IOException ioe) {
-            showError(ioe);
+    @FXML
+    private void onDeleteSequenceDefinition() {
+        UnitermDefDto sel = tableView.getSelectionModel().getSelectedItem();
+        if (sel == null) {
+            new Alert(Alert.AlertType.WARNING,
+                    "Najpierw wybierz definicję sekwencjowania.", ButtonType.OK
+            ).showAndWait();
+            return;
         }
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                "Na pewno usunąć definicję sekwencjowania„" + sel.name() + "”?",
+                ButtonType.YES, ButtonType.NO
+        );
+        alert.setHeaderText(null);
+        DialogPane dp = alert.getDialogPane();
+        ((Button) dp.lookupButton(ButtonType.YES)).setText("Tak");
+        ((Button) dp.lookupButton(ButtonType.NO )).setText("Nie");
+
+        alert.showAndWait()
+                .filter(bt -> bt == ButtonType.YES)
+                .ifPresent(bt -> {
+                    try {
+                        client.delete(sel.id());
+                        tableView.getItems().remove(sel);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        showError(ie);
+                    } catch (IOException ioe) {
+                        showError(ioe);
+                    }
+                });
+    }
+
+    @FXML
+    private void onDeleteParallelDefinition() {
+        UnitermDefDto sel = tableView1.getSelectionModel().getSelectedItem();
+        if (sel == null) {
+            new Alert(Alert.AlertType.WARNING,
+                    "Najpierw wybierz definicję zrównoleglenia.", ButtonType.OK
+            ).showAndWait();
+            return;
+        }
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                "Na pewno usunąć definicję zrównoleglenia „" + sel.name() + "”?",
+                ButtonType.YES, ButtonType.NO
+        );
+        alert.setHeaderText(null);
+        DialogPane dp = alert.getDialogPane();
+        ((Button) dp.lookupButton(ButtonType.YES)).setText("Tak");
+        ((Button) dp.lookupButton(ButtonType.NO )).setText("Nie");
+
+        alert.showAndWait()
+                .filter(bt -> bt == ButtonType.YES)
+                .ifPresent(bt -> {
+                    try {
+                        client.delete(sel.id());
+                        tableView1.getItems().remove(sel);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        showError(ie);
+                    } catch (IOException ioe) {
+                        showError(ioe);
+                    }
+                });
     }
 
     private static List<UnitermDefDto> filter(List<UnitermDefDto> src, Class<? extends TermDto> cls) {
