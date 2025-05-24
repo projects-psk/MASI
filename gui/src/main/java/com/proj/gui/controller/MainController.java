@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class MainController {
 
@@ -50,7 +48,7 @@ public class MainController {
     private void initialize() {
         initTable(tableView,  colName,  colDesc,  this::display);
         initTable(tableView1, colName1, colDesc1, this::display);
-        initResultTable(resultsTable, colResName, colResDesc);
+        initResultTable(colResName, colResDesc);
         refreshList();
         refreshResults();
 
@@ -75,8 +73,7 @@ public class MainController {
         });
     }
 
-    private void initResultTable(TableView<TransformResultDto> tv,
-                                 TableColumn<TransformResultDto,String> c1,
+    private void initResultTable(TableColumn<TransformResultDto,String> c1,
                                  TableColumn<TransformResultDto,String> c2) {
         c1.setCellValueFactory(d -> new ReadOnlyStringWrapper(d.getValue().name()));
         c2.setCellValueFactory(d -> new ReadOnlyStringWrapper(d.getValue().description()));
@@ -162,8 +159,11 @@ public class MainController {
                     "Wynik zapisano z id = " + result.id(),
                     ButtonType.OK).showAndWait();
             resultsTable.getItems().add(result);
-        } catch (IOException | InterruptedException ex) {
-            showError(ex);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            showError(ie);
+        } catch (IOException ioe) {
+            showError(ioe);
         }
     }
 
@@ -209,6 +209,8 @@ public class MainController {
         try {
             var list = client.findAllTransformResults();
             resultsTable.getItems().setAll(list);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
         } catch (Exception ex) {
             showError(ex);
         }

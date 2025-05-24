@@ -18,9 +18,7 @@ public class UnitermDefMapper {
 
     public static UnitermDef toEntity(UnitermDefDto dto) {
         UnitermDef e = new UnitermDef();
-        e.setName(dto.name());
-        e.setDescription(dto.description());
-        e.setStructure(dto.structure());
+        updateEntity(e, dto);
         return e;
     }
 
