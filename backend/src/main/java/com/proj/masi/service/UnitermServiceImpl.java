@@ -68,14 +68,6 @@ public class UnitermServiceImpl implements UnitermService {
     }
 
     @Override
-    @Transactional
-    public void deleteResult(UUID id) {
-        var existing = resultRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("TransformResult", id));
-        resultRepo.delete(existing);
-    }
-
-    @Override
     public TermDto transform(TransformRequest req) {
         var base = repo.findById(req.baseId())
                 .orElseThrow(() -> new ResourceNotFoundException(ENTITY, req.baseId()));
@@ -100,27 +92,45 @@ public class UnitermServiceImpl implements UnitermService {
     @Override
     @Transactional
     public TransformResultDto saveTransform(SaveTransformRequest req) {
+        UnitermDef def = repo.findById(req.unitermDefinitionId())
+                .orElseThrow(() -> new ResourceNotFoundException("UnitermDef", req.unitermDefinitionId()));
         TransformResult entity = TransformResult.builder()
+                .unitermDef(def)
                 .name(req.name())
                 .description(req.description())
                 .structure(req.structure())
                 .build();
 
-        entity = resultRepo.save(entity);
+        TransformResult saved = resultRepo.save(entity);
         return new TransformResultDto(
-                entity.getId(),
-                entity.getName(),
-                entity.getDescription(),
-                entity.getStructure()
+                saved.getId(),
+                def.getId(),
+                saved.getName(),
+                saved.getDescription(),
+                saved.getStructure(),
+                saved.getCreatedAt()
         );
     }
 
     @Override
     public List<TransformResultDto> findAllTransformResults() {
         return resultRepo.findAll().stream()
-                .map(r -> new TransformResultDto(r.getId(), r.getName(),
+                .map(r -> new TransformResultDto(
+                        r.getId(),
+                        r.getUnitermDef().getId(),
+                        r.getName(),
                         r.getDescription(),
-                        r.getStructure()))
+                        r.getStructure(),
+                        r.getCreatedAt()
+                ))
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public void deleteResult(UUID id) {
+        var existing = resultRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("TransformResult", id));
+        resultRepo.delete(existing);
     }
 }

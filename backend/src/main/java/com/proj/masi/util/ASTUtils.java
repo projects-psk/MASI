@@ -42,7 +42,6 @@ public final class ASTUtils {
             );
             return new ParallelDto(newChildren, sep);
         }
-
         throw new IllegalArgumentException("Cannot traverse into leaf: " + root);
     }
 }

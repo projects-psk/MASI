@@ -16,10 +16,10 @@ public class JacksonConfig {
     public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
         ObjectMapper mapper = builder.build();
         mapper.registerSubtypes(
-                new NamedType(UnitermDto.class,   "uniterm"),
-                new NamedType(SequenceDto.class,  "sequence"),
-                new NamedType(ParallelDto.class,  "parallel"),
-                new NamedType(CustomDto.class,    "custom")
+                new NamedType(UnitermDto.class,"uniterm"),
+                new NamedType(SequenceDto.class,"sequence"),
+                new NamedType(ParallelDto.class,"parallel"),
+                new NamedType(CustomDto.class,"custom")
         );
         return mapper;
     }

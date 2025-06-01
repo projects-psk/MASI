@@ -153,6 +153,7 @@ public class MainController {
         if (currentStructure == null) return;
 
         var req = new SaveTransformRequest(
+                lastBaseId,
                 "result_" + UUID.randomUUID().toString().substring(0,5),
                 "Wynik przekształcenia",
                 currentStructure

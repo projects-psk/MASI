@@ -28,7 +28,6 @@ public final class TexUtils {
         };
     }
 
-
     private static String renderSequence(SequenceDto s) {
         String sep = Objects.requireNonNullElse(s.separator(), ";");
         return "\\overgroup{" +

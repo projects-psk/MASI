@@ -1,5 +1,9 @@
 package com.proj.masi.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.proj.masi.dto.request.SaveCustomRequest;
 import com.proj.masi.dto.request.SaveTransformRequest;
 import com.proj.masi.dto.request.TransformRequest;
@@ -23,6 +27,7 @@ import java.util.UUID;
 public class UnitermController {
 
     private final UnitermService service;
+    private final ObjectMapper mapper;
 
     @GetMapping
     public List<UnitermDefDto> getAll() {
@@ -57,18 +62,32 @@ public class UnitermController {
         service.delete(id);
     }
 
+    @PostMapping("/transform")
+    public ResponseEntity<TermDto> transform(
+            @Valid @RequestBody TransformRequest req) throws JsonProcessingException {
+        TermDto result = service.transform(req);
+
+        String prettyAst = mapper
+                .registerModule(new JavaTimeModule())
+                .enable(SerializationFeature.INDENT_OUTPUT)
+                .writeValueAsString(result);
+        System.out.println(prettyAst);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/transform/save")
+    public ResponseEntity<TransformResultDto> saveTransform(
+            @Valid @RequestBody SaveTransformRequest req){
+        TransformResultDto dto = service.saveTransform(req);
+        URI location = URI.create("/api/uniterms/transform/save/" + dto.id());
+        return ResponseEntity.created(location).body(dto);
+    }
+
     @DeleteMapping("/transform/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTransformResult(@PathVariable UUID id) {
         service.deleteResult(id);
-    }
-
-    @PostMapping("/transform")
-    public ResponseEntity<TermDto> transform(
-            @Valid @RequestBody TransformRequest req
-    ) {
-        TermDto result = service.transform(req);
-        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/save")
@@ -78,15 +97,6 @@ public class UnitermController {
         var saved = service.saveCustom(req);
         URI location = URI.create("/api/uniterms/" + saved.id());
         return ResponseEntity.created(location).body(saved);
-    }
-
-    @PostMapping("/transform/save")
-    public ResponseEntity<TransformResultDto> saveTransform(
-        @Valid @RequestBody SaveTransformRequest req
-    ) {
-        TransformResultDto dto = service.saveTransform(req);
-        URI location = URI.create("/api/uniterms/transform/save/" + dto.id());
-        return ResponseEntity.created(location).body(dto);
     }
 
     @GetMapping("/transform/results")
