@@ -2,7 +2,9 @@ package com.proj.gui.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.proj.masi.dto.request.SaveCustomRequest;
 import com.proj.masi.dto.request.SaveTransformRequest;
 import com.proj.masi.dto.request.TransformRequest;
@@ -19,11 +21,17 @@ import java.util.ResourceBundle;
 import java.util.UUID;
 
 public class UnitermHttpClient {
+    private final ObjectMapper mapper;
+    public UnitermHttpClient() {
+        this.mapper = new ObjectMapper()
+                .registerModule(new JavaTimeModule())
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    }
+
     private static final String HEADER_CONTENT_TYPE = "Content-Type";
     private static final String APPLICATION_JSON   = "application/json";
 
     private final HttpClient client = HttpClient.newHttpClient();
-    private final ObjectMapper mapper = new ObjectMapper();
     private static final ResourceBundle CONF =
             ResourceBundle.getBundle("application", Locale.getDefault());
     private static final String BASE_URL = CONF.getString("base.url");
@@ -67,14 +75,28 @@ public class UnitermHttpClient {
 
     public void delete(UUID id) throws IOException, InterruptedException {
         var req = HttpRequest.newBuilder(URI.create(BASE_URL +"/"+id)).DELETE().build();
-        client.send(req, HttpResponse.BodyHandlers.discarding());
+        HttpResponse<String> response = client.send(req, HttpResponse.BodyHandlers.ofString());
+        int code = response.statusCode();
+        if (code == 409) {
+            String serverMsg = response.body();
+            throw new IOException(serverMsg);
+        } else if (code >= 400) {
+            throw new IOException("HTTP " + code + ": " + response.body());
+        }
     }
 
     public void deleteTransformResult(UUID id) throws IOException, InterruptedException {
         var req = HttpRequest.newBuilder(URI.create(BASE_URL + "/transform/" + id))
                 .DELETE()
                 .build();
-        client.send(req, HttpResponse.BodyHandlers.discarding());
+        HttpResponse<String> response = client.send(req, HttpResponse.BodyHandlers.ofString());
+        int code = response.statusCode();
+        if (code == 409) {
+            String serverMsg = response.body();
+            throw new IOException(serverMsg);
+        } else if (code >= 400) {
+            throw new IOException("HTTP " + code + ": " + response.body());
+        }
     }
 
     public ObjectNode emptyProps() {
